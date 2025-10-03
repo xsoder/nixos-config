@@ -1,5 +1,4 @@
 { config, pkgs, ... }:
-
 {
   home.username = "xsoder";
   home.homeDirectory = "/home/xsoder";
@@ -10,6 +9,7 @@
   };
   home.file = {
     ".config/i3/config".source = ./dotfiles/i3/config;
+    ".config/alacritty/alacritty.toml".source = ./dotfiles/alacritty/alacritty.toml;
     ".config/dunst/dunstrc".source = ./dotfiles/dunst/dunstrc;
     ".vimrc".source = ./dotfiles/vimrc;
     ".vim/colors.vim".source = ./dotfiles/vim/colors.vim;
