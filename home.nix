@@ -4,9 +4,9 @@
   home.homeDirectory = "/home/xsoder";
   programs.git.enable = true;
   home.stateVersion = "25.05";
-  programs.bash = {
-    enable = true;
-  };
+  programs.bash.enable = true;
+  programs.starship.enable = true;
+
   home.file = {
     ".config/i3/config".source = ./dotfiles/i3/config;
     ".config/alacritty/alacritty.toml".source = ./dotfiles/alacritty/alacritty.toml;
@@ -38,6 +38,7 @@
     dunst
     libnotify
     tmux
+    starship
   ];
 
 }
