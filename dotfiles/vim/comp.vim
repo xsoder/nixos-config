@@ -1,6 +1,5 @@
 " ============================================================================
-" Emacs Compilation Mode for Vim
-" Full recreation of Emacs compilation-mode functionality
+" Emacs Compilation Mode for Vim (clean version, no buffer-local keymaps)
 " ============================================================================
 
 if exists('g:loaded_compilation_mode')
@@ -53,20 +52,9 @@ function! s:CreateCompilationBuffer()
   " Set compilation-specific settings
   setlocal filetype=compilation
   setlocal errorformat=%f:%l:%c:\ %m,%f:%l:\ %m
-  
-  " Set up key mappings
-  nnoremap <buffer> <CR> :call <SID>JumpToError()<CR>
-  nnoremap <buffer> <C-c><C-c> :call <SID>KillCompilation()<CR>
-  nnoremap <buffer> g :call <SID>Recompile()<CR>
-  nnoremap <buffer> n :call <SID>NextError()<CR>
-  nnoremap <buffer> p :call <SID>PreviousError()<CR>
-  nnoremap <buffer> q :call <SID>CloseCompilation()<CR>
-  nnoremap <buffer> h :call <SID>ShowHelp()<CR>
 endfunction
 
 function! s:RunCompilation(cmd, use_emacs)
-  call s:SaveBuffers()
-  
   let s:compilation_command = a:cmd
   let s:compilation_directory = getcwd()
   let s:compilation_start_time = localtime()
@@ -84,7 +72,6 @@ function! s:RunCompilation(cmd, use_emacs)
   " Determine command to run
   let cmd = a:cmd
   if a:use_emacs
-    " Emacs-style command processing
     let cmd = s:ProcessEmacsCommand(a:cmd)
   endif
   
@@ -97,16 +84,12 @@ function! s:RunCompilation(cmd, use_emacs)
 endfunction
 
 function! s:ProcessEmacsCommand(cmd)
-  " Process Emacs Lisp-style commands
-  " Convert common Emacs commands to shell equivalents
   let cmd = a:cmd
   
-  " (compile "make") -> make
   if cmd =~# '^(compile\s\+".\{-}")'
     let cmd = matchstr(cmd, 'compile\s\+"\zs.\{-}\ze"')
   endif
   
-  " (shell-command "...") -> ...
   if cmd =~# '^(shell-command\s\+".\{-}")'
     let cmd = matchstr(cmd, 'shell-command\s\+"\zs.\{-}\ze"')
   endif
@@ -162,7 +145,6 @@ function! s:AppendOutput(text)
     execute comp_win . 'wincmd w'
     call append(line('$'), a:text)
     
-    " Auto-scroll if enabled
     if g:compilation_scroll_output
       normal! G
     endif
@@ -188,10 +170,8 @@ function! s:FinishCompilation(exit_code)
   call s:AppendOutput('Time elapsed: ' . elapsed . ' seconds')
   call s:AppendOutput('Finished at ' . strftime('%c'))
   
-  " Parse errors and populate quickfix
   call s:ParseErrors()
   
-  " Auto-jump to first error if enabled
   if g:compilation_auto_jump && !empty(getqflist())
     cfirst
   endif
@@ -202,20 +182,14 @@ function! s:ParseErrors()
     return
   endif
   
-  " Get all buffer lines
   let lines = getbufline(s:compilation_buffer, 1, '$')
-  
-  " Build error list
   let errors = []
   
   for line in lines
-    " Skip header/footer lines
     if line =~# '^-\*-' || line =~# '^=\+$' || line =~# '^Compilation' || line =~# '^Command:' || line =~# '^Time elapsed:' || line =~# '^Finished at'
       continue
     endif
     
-    " Match various error formats
-    " Format: filename:line:col: message
     let match = matchlist(line, '\v^([^:]+):(\d+):(\d+):\s*(.*)$')
     if !empty(match) && len(match) >= 5
       call add(errors, {
@@ -229,7 +203,6 @@ function! s:ParseErrors()
       continue
     endif
     
-    " Format: filename:line: message
     let match = matchlist(line, '\v^([^:]+):(\d+):\s*(.*)$')
     if !empty(match) && len(match) >= 4
       call add(errors, {
@@ -244,109 +217,11 @@ function! s:ParseErrors()
     endif
   endfor
   
-  " Set quickfix list
   call setqflist(errors, 'r')
   
   if !empty(errors)
     echo 'Found ' . len(errors) . ' error(s)/warning(s)'
   endif
-endfunction
-
-" ============================================================================
-" Navigation Functions
-" ============================================================================
-
-function! s:JumpToError()
-  let line = getline('.')
-  
-  " Try to extract file:line:col
-  let match = matchlist(line, '\v^([^:]+):(\d+):(\d+):')
-  if empty(match)
-    let match = matchlist(line, '\v^([^:]+):(\d+):')
-  endif
-  
-  if !empty(match) && len(match) >= 3
-    let fname = match[1]
-    let line_nr = str2nr(match[2])
-    let col_nr = 1
-    if len(match) >= 4 && !empty(match[3])
-      let col_nr = str2nr(match[3])
-    endif
-    
-    " Resolve relative paths
-    if fname !~# '^/'
-      let fname = s:compilation_directory . '/' . fname
-    endif
-    
-    if filereadable(fname)
-      " Jump to the file
-      wincmd p
-      execute 'edit ' . fnameescape(fname)
-      execute line_nr
-      execute 'normal! ' . col_nr . '|'
-      normal! zz
-    else
-      echo 'File not found: ' . fname
-    endif
-  endif
-endfunction
-
-function! s:NextError()
-  try
-    cnext
-  catch
-    echo 'No more errors'
-  endtry
-endfunction
-
-function! s:PreviousError()
-  try
-    cprevious
-  catch
-    echo 'No previous errors'
-  endtry
-endfunction
-
-" ============================================================================
-" Control Functions
-" ============================================================================
-
-function! s:KillCompilation()
-  if s:compilation_process != -1 && job_status(s:compilation_process) ==# 'run'
-    call job_stop(s:compilation_process, 'term')
-    call s:AppendOutput('')
-    call s:AppendOutput('*** Compilation killed ***')
-    let s:compilation_process = -1
-  else
-    echo 'No compilation process running'
-  endif
-endfunction
-
-function! s:Recompile()
-  if !empty(s:compilation_command)
-    call s:RunCompilation(s:compilation_command, 0)
-  else
-    echo 'No previous compilation command'
-  endif
-endfunction
-
-function! s:CloseCompilation()
-  let winnr = bufwinnr(s:compilation_buffer)
-  if winnr != -1
-    execute winnr . 'wincmd w'
-    close
-  endif
-endfunction
-
-function! s:ShowHelp()
-  echo "Compilation Mode Keys:\n"
-  echo "  <CR>      - Jump to error at cursor\n"
-  echo "  n         - Next error\n"
-  echo "  p         - Previous error\n"
-  echo "  g         - Recompile\n"
-  echo "  C-c C-c   - Kill compilation\n"
-  echo "  q         - Close compilation window\n"
-  echo "  h         - Show this help"
 endfunction
 
 " ============================================================================
@@ -361,22 +236,8 @@ function! EmacsCompile(cmd)
   call s:RunCompilation(a:cmd, 1)
 endfunction
 
-" Command definitions
 command! -nargs=1 -complete=shellcmd Compile call Compile(<q-args>)
 command! -nargs=1 EmacsCompile call EmacsCompile(<q-args>)
-command! Recompile call s:Recompile()
-command! KillCompilation call s:KillCompilation()
-command! NextError call s:NextError()
-command! PreviousError call s:PreviousError()
-
-" Default key mappings (can be disabled with g:compilation_mode_no_mappings)
-if !exists('g:compilation_mode_no_mappings') || !g:compilation_mode_no_mappings
-  nnoremap <leader>cc :Compile<Space>
-  nnoremap <leader>cr :Recompile<CR>
-  nnoremap <leader>ck :KillCompilation<CR>
-  nnoremap <leader>cn :NextError<CR>
-  nnoremap <leader>cp :PreviousError<CR>
-endif
 
 " Syntax highlighting for compilation buffer
 augroup CompilationMode
@@ -400,4 +261,5 @@ function! s:SetupCompilationHighlight()
   highlight link CompilationSeparator Comment
 endfunction
 
-echo "Compilation Mode loaded. Use :Compile <cmd> or <leader>cc"
+echo "Compilation Mode loaded. Use :Compile <cmd>"
+
