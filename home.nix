@@ -6,9 +6,10 @@ let
       recursive = true;
     };
   };
-  myEmacs = pkgs.emacsWithPackages (epkgs: with epkgs; [
-    vterm
+  myEmacs = pkgs.emacs.pkgs.withPackages (epkgs: [
+    epkgs.vterm
   ]);
+
 in
 {
   home.username = "xsoder";
