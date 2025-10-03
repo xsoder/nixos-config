@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 (package-initialize)
 (setq custom-file"~/.emacs.custom.el")
+(when (file-exists-p custom-file)
+  (load custom-file))
 (setq package-install-upgrade-built-in t)
 (setq default-frame-alist '((undecorated . nil) (fullscreen . nil)))
 
@@ -8,7 +10,6 @@
 (load-file "~/.emacs.rc/rc.el")
 (load "~/.emacs.rc/misc-rc.el")
 (add-to-list 'load-path "~/.emacs.local/")
-(load custom-file)
 (add-to-list 'default-frame-alist `(font . "Iosevka-18"))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.local/")
