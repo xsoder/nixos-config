@@ -17,3 +17,5 @@ endfunction
 
 call s:ensure('rose-pine/vim')
 call s:ensure('itchyny/lightline.vim')
+call s:ensure('junegunn/fzf')
+call s:ensure('junegunn/fzf.vim')
