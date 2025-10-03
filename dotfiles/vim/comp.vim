@@ -54,19 +54,17 @@ function! s:CreateCompilationBuffer()
   setlocal filetype=compilation
   setlocal errorformat=%f:%l:%c:\ %m,%f:%l:\ %m
   
-  " Set up key mappings
+  " Set up key mappings - avoid conflicts with normal Vim navigation
   nnoremap <buffer> <CR> :call <SID>JumpToError()<CR>
   nnoremap <buffer> <C-c><C-c> :call <SID>KillCompilation()<CR>
-  nnoremap <buffer> g :call <SID>Recompile()<CR>
-  nnoremap <buffer> n :call <SID>NextError()<CR>
-  nnoremap <buffer> p :call <SID>PreviousError()<CR>
+  nnoremap <buffer> <C-n> :call <SID>NextError()<CR>
+  nnoremap <buffer> <C-p> :call <SID>PreviousError()<CR>
+  nnoremap <buffer> <leader>g :call <SID>Recompile()<CR>
   nnoremap <buffer> q :call <SID>CloseCompilation()<CR>
-  nnoremap <buffer> h :call <SID>ShowHelp()<CR>
+  nnoremap <buffer> ? :call <SID>ShowHelp()<CR>
 endfunction
 
 function! s:RunCompilation(cmd, use_emacs)
-  " Removed s:SaveBuffers()
-
   let s:compilation_command = a:cmd
   let s:compilation_directory = getcwd()
   let s:compilation_start_time = localtime()
@@ -223,7 +221,7 @@ function! s:ParseErrors()
             \ 'lnum': str2nr(match[2]),
             \ 'col': str2nr(match[3]),
             \ 'text': match[4],
-            \ 'bufnr': 0,
+            \ 'bufnr': s:compilation_buffer,
             \ 'pattern': ''
             \ })
       continue
@@ -237,7 +235,7 @@ function! s:ParseErrors()
             \ 'lnum': str2nr(match[2]),
             \ 'col': 0,
             \ 'text': match[3],
-            \ 'bufnr': 0,
+            \ 'bufnr': s:compilation_buffer,
             \ 'pattern': ''
             \ })
       continue
@@ -341,12 +339,12 @@ endfunction
 function! s:ShowHelp()
   echo "Compilation Mode Keys:\n"
   echo "  <CR>      - Jump to error at cursor\n"
-  echo "  n         - Next error\n"
-  echo "  p         - Previous error\n"
-  echo "  g         - Recompile\n"
+  echo "  C-n       - Next error\n"
+  echo "  C-p       - Previous error\n"
+  echo "  <leader>g - Recompile\n"
   echo "  C-c C-c   - Kill compilation\n"
   echo "  q         - Close compilation window\n"
-  echo "  h         - Show this help"
+  echo "  ?         - Show this help"
 endfunction
 
 " ============================================================================
@@ -362,8 +360,8 @@ function! EmacsCompile(cmd)
 endfunction
 
 " Command definitions
-command! -nargs=+ -complete=shellcmd Compile call Compile(<q-args>)
-command! -nargs=+ EmacsCompile call EmacsCompile(<q-args>)
+command! -nargs=1 -complete=shellcmd Compile call Compile(<q-args>)
+command! -nargs=1 EmacsCompile call EmacsCompile(<q-args>)
 command! Recompile call s:Recompile()
 command! KillCompilation call s:KillCompilation()
 command! NextError call s:NextError()
