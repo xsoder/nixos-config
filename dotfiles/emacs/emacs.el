@@ -5,7 +5,7 @@
   (load custom-file))
 (setq package-install-upgrade-built-in t)
 (setq default-frame-alist '((undecorated . nil) (fullscreen . nil)))
-
+(setq confirm-kill-emacs nil)
 
 (load-file "~/.emacs.rc/rc.el")
 (load "~/.emacs.rc/misc-rc.el")
@@ -118,5 +118,7 @@
 
 (rc/require 'yasnippet)
 (yas-global-mode)
+
 (rc/require 'nice-org-html)
-(setq confirm-kill-emacs nil)
+
+(rc/require 'ox-html5slide)
