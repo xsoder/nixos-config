@@ -1,8 +1,7 @@
 { config, pkgs, ... }:
-
 let
   dotDir = name: path: {
-    "home.file.${name}" = {
+    ${name} = {
       source = path;
       recursive = true;
     };
@@ -12,12 +11,10 @@ in
   home.username = "xsoder";
   home.homeDirectory = "/home/xsoder";
   home.stateVersion = "25.05";
-
   programs.git.enable = true;
   programs.bash.enable = true;
   programs.starship.enable = true;
-
-  home.file = 
+  home.file =
     dotDir ".emacs.local" ./dotfiles/emacs/emacs.local
     // dotDir ".emacs.rc" ./dotfiles/emacs/emacs.rc
     // {
@@ -35,7 +32,6 @@ in
       ".vim/plugins.vim".source = ./dotfiles/vim/plugins.vim;
       ".xprofile".source = ./dotfiles/xprofile;
     };
-
   home.packages = with pkgs; [
     firefox
     neofetch
@@ -55,4 +51,3 @@ in
     starship
   ];
 }
-
