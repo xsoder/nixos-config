@@ -1,2 +1,7 @@
 * Nix-OS Configuration
+
 This is my first commit for nix os configuration and me learning nixos and all. 
+
+I am trying to learn literate configuration to do this so that everything just works out of the box.
+
+** Nix-OS Configuration

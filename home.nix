@@ -9,17 +9,21 @@
     enable = true;
   };
   home.file.".config/i3/config".source = ./dotfiles/i3/config;
+  home.file.".config/dunst/dunstrc".source = ./dotfiles/dunst/dunstrc;
   home.file.".xprofile".source = ./dotfiles/xprofile;	
 
   home.packages = with pkgs; [
     firefox
     neofetch
-    alacritty
     feh
     i3status
     emacs
     alacritty
     discord
+    btop
+    scrot
+    dunst
+    libnotify
   ];
 
 }

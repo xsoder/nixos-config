@@ -1,0 +1,25 @@
+[global]
+font = Iosevka 16
+frame_width = 4
+corner_radius = 0
+padding = 0
+horizontal_padding =  0
+
+# Transparency
+transparency = 0 # roughly 85% opacity
+
+# Timeouts
+timeout = 5
+idle_threshold = 120
+
+# History
+history_length = 20
+
+# Word wrap
+word_wrap = true
+ellipsis = "..."
+
+# Close/open/urgency binds (optional)
+mouse_left_click = close_current
+mouse_middle_click = do_action
+mouse_right_click = close_all
