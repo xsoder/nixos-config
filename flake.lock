@@ -83,11 +83,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1759528287,
-        "narHash": "sha256-LjcuAiIyGWaVle9+3Q16CvyGV7/aIc4Ag3Ff12jgFVY=",
+        "lastModified": 1759528463,
+        "narHash": "sha256-pNrfjybuPDuDRfRkiB4OnSiJIpfoV6Z+Ben3D/SRFFw=",
         "owner": "xsoder",
         "repo": "suckless-build",
-        "rev": "cf5c13bfff029314e17ae550891344ff943e5a2d",
+        "rev": "65fa8ccc904df6a611e2816c056d46e670227f87",
         "type": "github"
       },
       "original": {
