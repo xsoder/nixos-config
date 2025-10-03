@@ -9,6 +9,11 @@
 
 This is my NixOS configuration using flakes and home-manager. The system is configured for a minimal i3 window manager setup with custom suckless software builds.
 
+#+HTML: <p float="left">
+#+HTML:   <img src="./images/screenshot.png" width="300"/>
+#+HTML:   <img src="./images/emacs.png" width="300"/>
+#+HTML: </p>
+
 * System Overview
 
 ** Hardware
