@@ -11,7 +11,6 @@ let g:loaded_compilation_mode = 1
 " Configuration variables
 let g:compilation_auto_jump = get(g:, 'compilation_auto_jump', 1)
 let g:compilation_scroll_output = get(g:, 'compilation_scroll_output', 1)
-let g:compilation_ask_about_save = get(g:, 'compilation_ask_about_save', 1)
 let g:compilation_window_height = get(g:, 'compilation_window_height', 15)
 
 " State tracking
@@ -24,16 +23,6 @@ let s:compilation_start_time = 0
 " ============================================================================
 " Core Compilation Functions
 " ============================================================================
-
-function! s:SaveBuffers()
-  if g:compilation_ask_about_save
-    let response = input('Save modified buffers? (y/n): ')
-    if response !=? 'y'
-      return
-    endif
-  endif
-  silent! wall
-endfunction
 
 function! s:CreateCompilationBuffer()
   " Create or reuse compilation buffer
