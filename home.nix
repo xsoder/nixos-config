@@ -8,10 +8,17 @@
   programs.bash = {
     enable = true;
   };
-  home.file.".config/i3/config".source = ./dotfiles/i3/config;
-  home.file.".config/dunst/dunstrc".source = ./dotfiles/dunst/dunstrc;
-  home.file.".vimrc".source = ./dotfiles/vimrc;
-  home.file.".xprofile".source = ./dotfiles/xprofile;	
+  home.file = {
+    ".config/i3/config".source = ./dotfiles/i3/config;
+    ".config/dunst/dunstrc".source = ./dotfiles/dunst/dunstrc;
+    ".vimrc".source = ./dotfiles/vimrc;
+    ".vim/colors.vim".source = ./dotfiles/vim/colors.vim;
+    ".vim/keybinds.vim".source = ./dotfiles/vim/keybinds.vim;
+    ".vim/options.vim".source = ./dotfiles/vim/options.vim;
+    ".vim/plugins.vim".source = ./dotfiles/vim/plugins.vim;
+    ".xprofile".source = ./dotfiles/xprofile;	
+  };
+
 
   home.packages = with pkgs; [
     firefox
