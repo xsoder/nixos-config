@@ -10,6 +10,7 @@
   };
   home.file.".config/i3/config".source = ./dotfiles/i3/config;
   home.file.".config/dunst/dunstrc".source = ./dotfiles/dunst/dunstrc;
+  home.file.".vimrc".source = ./dotfiles/vimrc;
   home.file.".xprofile".source = ./dotfiles/xprofile;	
 
   home.packages = with pkgs; [
