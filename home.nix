@@ -13,6 +13,7 @@
     ".config/dunst/dunstrc".source = ./dotfiles/dunst/dunstrc;
     ".vimrc".source = ./dotfiles/vimrc;
     ".vim/colors.vim".source = ./dotfiles/vim/colors.vim;
+    ".vim/Comp.vim".source = ./dotfiles/vim/Comp.vim;
     ".vim/fzf.vim".source = ./dotfiles/vim/fzf.vim;
     ".vim/keybinds.vim".source = ./dotfiles/vim/keybinds.vim;
     ".vim/options.vim".source = ./dotfiles/vim/options.vim;
