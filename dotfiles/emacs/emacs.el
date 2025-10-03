@@ -118,3 +118,5 @@
 
 (rc/require 'yasnippet)
 (yas-global-mode)
+(rc/require 'nice-org-html)
+(setq confirm-kill-emacs nil)

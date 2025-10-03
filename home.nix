@@ -30,7 +30,7 @@ in
       ".config/alacritty/alacritty.toml".source = ./dotfiles/alacritty/alacritty.toml;
       ".config/dunst/dunstrc".source = ./dotfiles/dunst/dunstrc;
       ".vimrc".source = ./dotfiles/vimrc;
-      ".emacs".source = ./dotfiles/emacs/emacs;
+      ".emacs".source = ./dotfiles/emacs/emacs.el;
       ".emacs.custom".source = ./dotfiles/emacs/emacs.custom.el;
       ".xprofile".source = ./dotfiles/xprofile;
     };
