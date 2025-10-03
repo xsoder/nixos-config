@@ -1,13 +1,414 @@
-* Nix-OS Configuration
+#+TITLE: NixOS Configuration
+#+AUTHOR: xsoder
+#+EMAIL: tadihailukebe@gmail.com
+#+DATE: 2025
+#+STARTUP: overview
+#+PROPERTY: header-args :tangle no
 
-This is my first commit for nix os configuration and me learning nixos and all. 
+* Introduction
 
-I am trying to learn literate configuration to do this so that everything just works out of the box.
+This is my NixOS configuration using flakes and home-manager. The system is configured for a minimal i3 window manager setup with custom suckless software builds.
 
-** Nix-OS Configuration
+* System Overview
 
-To rebuild the system just do
+** Hardware
+- Virtual machine setup (QEMU/KVM) // For now since I am not fully used to nix yet
+- GRUB bootloader on /dev/vda
+
+** Window Manager
+- i3 window manager
+- Custom suckless tools (dmenu, st, dwm)
+- Ly display manager
+
+** Core Philosophy
+- Declarative configuration
+- Reproducible builds
+- Custom suckless software from source
+- Minimal dependencies
+  
+* Flake Configuration
+
+The system uses Nix flakes for reproducibility and dependency management.
+
+#+BEGIN_SRC nix :tangle flake.nix
+{
+  description = "NixOS from Scratch";
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixos-25.05";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    suckless-builds.url = "github:xsoder/suckless-build";
+  };
+  outputs = { self, nixpkgs, home-manager, suckless-builds, ... }: {
+    nixosConfigurations.xsoder = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.xsoder = import ./home.nix;
+            backupFileExtension = "backup";
+            extraSpecialArgs = { inherit suckless-builds; };
+          };
+        }
+      ];
+    };
+  };
+}
+#+END_SRC
+
+** Key Features
+- NixOS 25.05
+- Home-manager integration
+- Custom suckless builds from GitHub
+
+* System Configuration
+
+** Boot Configuration
+
+#+BEGIN_SRC nix
+boot.loader.grub.enable = true;
+boot.loader.grub.device = "/dev/vda";
+boot.loader.grub.useOSProber = true;
+#+END_SRC
+
+** Nix Settings
+
+Enable flakes and the nix command:
+
+#+BEGIN_SRC nix
+nix.settings.experimental-features = [ "nix-command" "flakes"];
+#+END_SRC
+
+** Networking
+
+#+BEGIN_SRC nix
+networking.hostName = "nixos";
+networking.networkmanager.enable = true;
+#+END_SRC
+
+** Localization
+
+#+BEGIN_SRC nix
+time.timeZone = "America/New_York";
+i18n.defaultLocale = "en_US.UTF-8";
+#+END_SRC
+
+** X Server and Window Manager
+
+#+BEGIN_SRC nix
+services.xserver = {
+  enable = true;
+  autoRepeatDelay = 200;
+  autoRepeatInterval = 35;
+  windowManager.i3.enable = true;
+};
+
+services.displayManager.ly.enable = true;
+#+END_SRC
+
+Key rate settings are configured for faster key repeat.
+
+** User Configuration
+
+#+BEGIN_SRC nix
+users.users.xsoder = {
+  isNormalUser = true;
+  description = "xsoder";
+  extraGroups = [ "networkmanager" "wheel" ];
+};
+#+END_SRC
+
+** System Packages
+
+Minimal system-level packages:
+
+#+BEGIN_SRC nix
+environment.systemPackages = with pkgs; [
+  vim
+  wget
+  home-manager
+  gh
+];
+#+END_SRC
+
+** Fonts
+
+#+BEGIN_SRC nix
+fonts.packages = with pkgs; [
+  iosevka
+];
+#+END_SRC
+
+** Services
+
+SSH access enabled:
+
+#+BEGIN_SRC nix
+services.openssh.enable = true;
+networking.firewall.allowedTCPPorts = [ 22 ];
+#+END_SRC
+
+* Home Manager Configuration
+
+User-specific configuration managed through home-manager.
+
+** Suckless Software Module
+
+Custom module for managing suckless builds:
+
+#+BEGIN_SRC nix :tangle modules/suckless.nix
+{ config, pkgs, suckless-builds, ... }:
+
+let
+  sucklessPkgs = suckless-builds.packages.${pkgs.system};
+in
+{
+  home.packages = [
+    sucklessPkgs.dmenu
+    sucklessPkgs.st
+    sucklessPkgs.dwm
+    pkgs.nerd-fonts.iosevka
+  ];
+
+  fonts.fontconfig.enable = true;
+}
+#+END_SRC
+
+This module:
+- Imports custom dmenu, st, and dwm builds
+- Adds Iosevka Nerd Font
+- Enables fontconfig
+
+** User Packages
+
+#+BEGIN_SRC nix
+home.packages = with pkgs; [
+  firefox
+  neofetch
+  feh
+  i3status
+  myEmacs
+  discord
+  btop
+  scrot
+  dunst
+  libnotify
+  starship
+];
+#+END_SRC
+
+** Dotfiles Management
+
+Dotfiles are managed declaratively:
+
+#+BEGIN_SRC nix
+home.file = {
+  ".config/i3/config".source = ./dotfiles/i3/config;
+  ".config/alacritty/alacritty.toml".source = ./dotfiles/alacritty/alacritty.toml;
+  ".config/dunst/dunstrc".source = ./dotfiles/dunst/dunstrc;
+  ".vimrc".source = ./dotfiles/vimrc;
+  ".emacs".source = ./dotfiles/emacs/emacs;
+  ".xprofile".source = ./dotfiles/xprofile;
+};
+#+END_SRC
+
+* i3 Configuration
+
+** Key Bindings
+
+| Key         | Action              |
+|-------------+---------------------|
+| Mod+Return  | Launch terminal     |
+| Mod+d       | Launch dmenu        |
+| Mod+q       | Kill window         |
+| Mod+b       | Launch Firefox      |
+| Mod+c       | Launch Emacs        |
+| Mod+Shift+s | Screenshot          |
+| Mod+Tab     | Workspace back/fwd  |
+
+** Startup Applications
+
+#+BEGIN_SRC conf
+exec --no-startup-id feh --bg-fill /home/xsoder/nixos-config/dotfiles/wallpaper.png
+exec --no-startup-id xrandr --output Virtual-1 --mode 1920x1080
+#+END_SRC
+
+** Font
+
+#+BEGIN_SRC conf
+font pango:Iosevka 10
+#+END_SRC
+
+** Workspace Configuration
+
+- 10 workspaces (1-10)
+- focus_follows_mouse no
+- hide_edge_borders both
+
+* Vim Configuration
+
+Minimal Vim setup with custom plugins.
+
+** Plugin Management
+
+Custom plugin installer that clones from GitHub:
+
+#+BEGIN_SRC vim
+function! s:ensure(repo)
+  let name = split(a:repo, '/')[-1]
+  let path = s:plugin_dir . '/' . name
+
+  if !isdirectory(path)
+    if !isdirectory(s:plugin_dir)
+      call mkdir(s:plugin_dir, 'p')
+    endif
+    execute '!git clone --depth=1 https://github.com/' . a:repo . ' ' . shellescape(path)
+  endif
+
+  execute 'set runtimepath+=' . fnameescape(path)
+endfunction
+#+END_SRC
+
+** Installed Plugins
+
+- rose-pine/vim (colorscheme)
+- itchyny/lightline.vim (statusline)
+- tpope/vim-fugitive (git integration)
+
+** Settings
+
+#+BEGIN_SRC vim
+set number
+set relativenumber
+set expandtab
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+set smartindent
+set noswapfile
+#+END_SRC
+
+** Compilation Mode
+
+Custom Emacs-style compilation mode for Vim providing:
+- Async compilation
+- Error navigation
+- Quickfix integration
+
+* Building and Installation
+
+** Rebuild System
 
 #+BEGIN_SRC bash
-    sudo nixos-rebuild switch --flake ~/nixos-config#xsoder
+sudo nixos-rebuild switch --flake ~/nixos-config#xsoder
 #+END_SRC
+
+** Update Flake Inputs
+
+#+BEGIN_SRC bash
+cd ~/nixos-config
+nix flake update
+#+END_SRC
+
+** Update Specific Input
+
+#+BEGIN_SRC bash
+nix flake update suckless-builds
+#+END_SRC
+
+** Check Flake
+
+#+BEGIN_SRC bash
+nix flake check
+#+END_SRC
+
+* Custom Suckless Builds
+
+Suckless software is built from source in a separate repository.
+
+** Repository Structure
+
+#+BEGIN_EXAMPLE
+suckless-build/
+├── flake.nix
+├── dmenu/
+├── st/
+└── dwm/
+#+END_EXAMPLE
+
+** Building Individual Programs
+
+#+BEGIN_SRC bash
+nix build github:xsoder/suckless-build#dmenu
+nix build github:xsoder/suckless-build#st
+nix build github:xsoder/suckless-build#dwm
+#+END_SRC
+
+** Development Shell
+
+#+BEGIN_SRC bash
+cd ~/suckless-build
+nix develop
+#+END_SRC
+
+* Maintenance
+
+** Garbage Collection
+
+Remove old generations:
+
+#+BEGIN_SRC bash
+nix-collect-garbage -d
+sudo nix-collect-garbage -d
+#+END_SRC
+
+** Check System Generation
+
+#+BEGIN_SRC bash
+nixos-rebuild list-generations
+#+END_SRC
+
+** Rollback
+
+#+BEGIN_SRC bash
+sudo nixos-rebuild switch --rollback
+#+END_SRC
+
+* Troubleshooting
+
+** Fixing Git Permissions
+
+If flake update fails with permission errors:
+
+#+BEGIN_SRC bash
+sudo chown -R $USER:$USER ~/nixos-config/.git
+#+END_SRC
+
+** Rebuilding Font Cache
+
+#+BEGIN_SRC bash
+fc-cache -fv
+#+END_SRC
+
+** Checking Package Availability
+
+#+BEGIN_SRC bash
+nix search nixpkgs package-name
+#+END_SRC
+
+* References
+
+- NixOS Manual: https://nixos.org/manual/nixos/stable/
+- Home Manager Manual: https://nix-community.github.io/home-manager/
+- Nix Flakes: https://nixos.wiki/wiki/Flakes
+- Suckless: https://suckless.org/
+
+* License
+
+This configuration is provided as-is for personal use and learning.
