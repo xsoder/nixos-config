@@ -9,3 +9,4 @@ set tabstop=4
 set smartindent 
 
 syntax on
+set laststatus=2
