@@ -10,4 +10,4 @@ set smartindent
 
 syntax on
 set laststatus=2
-
+set noswapfile

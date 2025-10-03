@@ -37,6 +37,7 @@
     scrot
     dunst
     libnotify
+    tmux
   ];
 
 }
