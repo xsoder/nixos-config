@@ -6,6 +6,9 @@ let
       recursive = true;
     };
   };
+  myEmacs = pkgs.emacsWithPackages (epkgs: with epkgs; [
+    vterm
+  ]);
 in
 {
   home.username = "xsoder";
@@ -32,7 +35,7 @@ in
     neofetch
     feh
     i3status
-    emacs
+    myEmacs
     discord
     btop
     scrot
