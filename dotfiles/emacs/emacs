@@ -113,6 +113,7 @@
 (global-set-key (kbd "C-c k") #'vterm-copy-mode-done)
 
 (rc/require 'mmm-mode)
+(rc/require 'nix-mode)
 
 (rc/require 'yasnippet)
 (yas-global-mode)
