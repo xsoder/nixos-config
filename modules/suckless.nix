@@ -8,9 +8,8 @@ in
     sucklessPkgs.dmenu
     sucklessPkgs.st
     sucklessPkgs.dwm
-  ] ++ (with pkgs; [
-    (nerdfonts.override { fonts = [ "Iosevka" ]; })
-  ]);
+    pkgs.nerd-fonts.iosevka
+  ];
 
   fonts.fontconfig.enable = true;
 }
