@@ -1,0 +1,117 @@
+;; -*- lexical-binding: t; -*-
+(package-initialize)
+(setq custom-file"~/.emacs.custom.el")
+(setq package-install-upgrade-built-in t)
+(setq default-frame-alist '((undecorated . nil) (fullscreen . nil)))
+
+
+(load-file "~/.emacs.rc/rc.el")
+(load "~/.emacs.rc/misc-rc.el")
+(add-to-list 'load-path "~/.emacs.local/")
+(load custom-file)
+(add-to-list 'default-frame-alist `(font . "Iosevka-18"))
+
+(add-to-list 'custom-theme-load-path "~/.emacs.local/")
+(load-theme 'dark t)
+
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
+(menu-bar-mode 0)
+(ido-mode 1)
+(ido-everywhere 1)
+(column-number-mode 1)
+
+(global-display-line-numbers-mode 1)
+
+(dolist (mode '(eshell-mode-hook
+                vterm-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(electric-pair-mode 1)
+(setq shell-command-switch "-ic")
+(setq backup-directory-alist '(("." . "~/.emacs.d/tmp-files/")))
+(setq auto-save-file-name-transforms `((".*" "~/.emacs.d/tmp-files/" t)))
+(setq lock-file-name-transforms `((".*" "~/.emacs.d/tmp-files/" t)))
+(setq vterm-term-environment-variable "xterm-256color")
+
+(require 'dired-win)
+(require 'simpc-mode)
+(add-to-list 'auto-mode-alist '("\\.[hc]\\(pp\\)?\\'" . simpc-mode))
+(add-to-list 'auto-mode-alist '("\\.[b]\\'" . simpc-mode))
+
+(require 'vlog-mode)
+
+; PACKAGES
+(rc/require 'dash)
+(rc/require 'dash-functional)
+
+(rc/require 'smex)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+(rc/require 'multiple-cursors)
+
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->")         'mc/mark-next-like-this)
+(global-set-key (kbd "C-<")         'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<")     'mc/mark-all-like-this)
+(global-set-key (kbd "C-\"")        'mc/skip-to-next-like-this)
+(global-set-key (kbd "C-:")         'mc/skip-to-previous-like-this)
+
+(require 'seq)
+(rc/require 'magit)
+(setq magit-display-buffer-function
+      #'magit-display-buffer-fullframe-status-v1)
+
+(rc/require 'transient)
+(rc/require 'markdown-mode)
+(rc/require 'lua-mode)
+
+(rc/require 'move-text)
+(global-set-key (kbd "M-n") 'move-text-down)
+(global-set-key (kbd "M-p") 'move-text-up)
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-p") 'move-text-up)
+            (local-set-key (kbd "M-n") 'move-text-down)))
+
+(require 'man)
+(set-face-attribute 'Man-overstrike nil :inherit font-lock-type-face :bold t)
+(set-face-attribute 'Man-underline nil :inherit font-lock-keyword-face :underline t)
+(global-set-key (kbd "C-c m") #'man)
+
+
+(rc/require 'rust-mode)
+(rc/require 'auctex-label-numbers)
+(dolist (buf (buffer-list))
+  (with-current-buffer buf
+    (when (and buffer-file-name
+               (string-match-p "\\.tex\\'" buffer-file-name))
+      (auctex-label-numbers-mode 1))))
+(rc/require 'markdown-preview-mode)
+(rc/require 'company)
+(global-company-mode)
+(put 'set-goal-column 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+
+(rc/require 'vterm)
+
+(require 'vterm-toggle)
+(require 'vterm-buffer)
+(require 'url-grabber)
+(require 'ssh-connect)
+
+(require 'chc-mode)
+;;(require 'indent-mode)
+(global-set-key (kbd "C-<return>") #'vterm-toggle-new-window)
+(global-set-key (kbd "C-x t") #'vterm-toggle-vertical-split)
+(global-set-key (kbd "C-c s") #'vterm-switch-buffer-dmenu)
+
+(global-set-key (kbd "C-c C-k") #'vterm-copy-mode)
+(global-set-key (kbd "C-c k") #'vterm-copy-mode-done)
+
+(rc/require 'mmm-mode)
+
+(rc/require 'yasnippet)
+(yas-global-mode)
