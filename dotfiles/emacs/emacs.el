@@ -4,14 +4,12 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 (setq package-install-upgrade-built-in t)
-(setq default-frame-alist '((undecorated . nil) (fullscreen . nil)))
+(defun my/kill-emacs-no-questions ()
+  "Kill Emacs immediately without asking."
+  (interactive)
+  (kill-emacs))
 
-(setq confirm-kill-emacs nil) ;; no "Do you really want to exit?"
-
-;; remove all quit query hooks
-(setq kill-emacs-query-functions nil)
-
-;; never ask about unsaved buffers
+(global-set-key (kbd "C-x C-c") #'my/kill-emacs-no-questions)
 (setq confirm-kill-processes nil)
 (setq kill-buffer-query-functions nil)
 
