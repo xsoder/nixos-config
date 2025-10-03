@@ -16,7 +16,7 @@ in
   programs.starship.enable = true;
   home.file =
     dotDir ".emacs.local" ./dotfiles/emacs/emacs.local
-    // dotDir ".vim/local" ./dotfiles/vim/
+    // dotDir ".vim/local" ./dotfiles/vim
     // dotDir ".emacs.rc" ./dotfiles/emacs/emacs.rc
     // {
       ".config/i3/config".source = ./dotfiles/i3/config;
