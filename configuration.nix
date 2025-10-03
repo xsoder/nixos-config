@@ -60,6 +60,7 @@
     wget
     git
     home-manager
+    gh
   ];
 
   fonts.packages = with pkgs; [
