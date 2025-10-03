@@ -5,7 +5,15 @@
   (load custom-file))
 (setq package-install-upgrade-built-in t)
 (setq default-frame-alist '((undecorated . nil) (fullscreen . nil)))
-(setq confirm-kill-emacs nil)
+
+(setq confirm-kill-emacs nil) ;; no "Do you really want to exit?"
+
+;; remove all quit query hooks
+(setq kill-emacs-query-functions nil)
+
+;; never ask about unsaved buffers
+(setq confirm-kill-processes nil)
+(setq kill-buffer-query-functions nil)
 
 (load-file "~/.emacs.rc/rc.el")
 (load "~/.emacs.rc/misc-rc.el")
