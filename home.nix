@@ -16,6 +16,7 @@ in
   programs.starship.enable = true;
   home.file =
     dotDir ".emacs.local" ./dotfiles/emacs/emacs.local
+    // dotDir ".vim/local" ./dotfiles/vim/
     // dotDir ".emacs.rc" ./dotfiles/emacs/emacs.rc
     // {
       ".config/i3/config".source = ./dotfiles/i3/config;
@@ -24,12 +25,6 @@ in
       ".vimrc".source = ./dotfiles/vimrc;
       ".emacs".source = ./dotfiles/emacs/emacs;
       ".emacs.custom".source = ./dotfiles/emacs/emacs.custom.el;
-      ".vim/colors.vim".source = ./dotfiles/vim/colors.vim;
-      ".vim/comp.vim".source = ./dotfiles/vim/comp.vim;
-      ".vim/fzf.vim".source = ./dotfiles/vim/fzf.vim;
-      ".vim/keybinds.vim".source = ./dotfiles/vim/keybinds.vim;
-      ".vim/options.vim".source = ./dotfiles/vim/options.vim;
-      ".vim/plugins.vim".source = ./dotfiles/vim/plugins.vim;
       ".xprofile".source = ./dotfiles/xprofile;
     };
   home.packages = with pkgs; [
@@ -38,16 +33,11 @@ in
     feh
     i3status
     emacs
-    alacritty
-    fzf
-    ripgrep
-    fd
     discord
     btop
     scrot
     dunst
     libnotify
-    tmux
     starship
   ];
 }
