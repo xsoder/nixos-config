@@ -6,7 +6,7 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    suckless-builds.url = "github:xsoder/suckless-builds";
+    suckless-builds.url = "github:xsoder/suckless-build";
   };
   outputs = { self, nixpkgs, home-manager, suckless-builds, ... }: {
     nixosConfigurations.xsoder = nixpkgs.lib.nixosSystem {
