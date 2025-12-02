@@ -18,9 +18,12 @@ in
   home.username = "xsoder";
   home.homeDirectory = "/home/xsoder";
   home.stateVersion = "25.05";
-  programs.git.enable = true;
+  programs.git = {
+    enable = true;
+    userName = "xsoder";
+    userEmail = "tadihailukebe@gmail.com";
+  };
   programs.bash.enable = true;
-  programs.starship.enable = true;
   home.file =
     dotDir ".emacs.local" ./dotfiles/emacs/emacs.local
     // dotDir ".vim/local" ./dotfiles/vim
@@ -45,6 +48,5 @@ in
     scrot
     dunst
     libnotify
-    starship
   ];
 }
